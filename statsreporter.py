@@ -186,6 +186,42 @@ class MyView(discord.ui.View):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
+##########################
+# Get player stats
+##########################
+
+@bot.tree.command(name="power", description="power", guild=discord.Object(id=482012169911664640))
+async def power(interaction: discord.Interaction, player: str):
+
+    await interaction.response.defer()
+
+    player_stats = q.get_player_stats(player)
+
+    player_avg_10 = q.get_player_avg_10(player)
+
+    avg_kpr_10 = player_avg_10[4] / player_avg_10[12]
+    avg_kdr_10 = player_avg_10[4] / player_avg_10[6]
+
+    embed = discord.Embed(
+        title="Power for " + str(player_stats[0]),
+        description="**Latest:**  [" + str(player_avg_10[10]) +
+                    "](https://metrics.alde.dev/d/cdom6f94bsk5cf/match-stats?orgId=2&var-MatchID=" +
+                    str(player_avg_10[11]) + ")" +
+                    "\n**Total matches: **" + str(player_stats[4]) +
+                    "\n**W/L Ratio: **" + str(round(player_avg_10[7],2)) + " (" + str(round(player_stats[3],2)) + ")",
+        colour=0xF0C43F,
+    )
+    embed.add_field(name="PPR", value=str(round(player_avg_10[8],2)) +
+                                      " (" + str(round(player_stats[2],2)) + ")", inline=True)
+    embed.add_field(name="KPR", value=str(round(avg_kpr_10,2)) +
+                                      " (" + str(round(player_stats[5],2)) + ")", inline=True)
+    embed.add_field(name="KDR", value=str(round(avg_kdr_10,2)) +
+                                      " (" + str(round(player_stats[6],2)) + ")", inline=True)
+    embed.add_field(name="LG_Acc", value= str(round(player_avg_10[13],2)) +
+                                      " (" + str(round(player_stats[7],2)) + ")", inline=True)
+
+    embed.set_footer(text= "*Last 10 maps (all time)")
+    await interaction.followup.send(embed=embed)
 
 @bot.event
 async def on_ready():
