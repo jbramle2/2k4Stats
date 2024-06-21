@@ -34,7 +34,8 @@ def get_player_stats(player):
 def get_player_avg_10(player):
     query = ("SELECT * "
              "FROM utstatsdb_views.player_averages_10 "
-             "WHERE p_name = '" + str(player) + "'"
+             "WHERE p_name = '" + str(player) + "'" + " ORDER BY p_num DESC"
+
              )
 
     player_stats = conn.ssh_query(query)

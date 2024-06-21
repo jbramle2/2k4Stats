@@ -1,3 +1,4 @@
+import statistics
 import pytz
 import queries as q
 import discord
@@ -5,6 +6,7 @@ from discord.ext import commands
 from table2ascii import table2ascii, Alignment, PresetStyle
 from itertools import groupby
 from operator import itemgetter
+
 
 ######################################################
 with open('discord_token.txt', 'r') as t:
@@ -21,6 +23,10 @@ bot = commands.Bot(
     sync_commands_debug=True,
     intents=intents
 )
+
+
+def average(lst):
+    return mean(lst)
 
 
 ##########################
@@ -73,6 +79,8 @@ async def gen_embed(back):
     red_team = sorted(red_team, key=lambda x: x[21], reverse=True)
     blue_team = sorted(blue_team, key=lambda x: x[21], reverse=True)
 
+    print(red_team)
+
     # Create a list of just player names
     red_players = [item[6] for item in red_team]
     blue_players = [item[6] for item in blue_team]
@@ -81,34 +89,49 @@ async def gen_embed(back):
     red_players = [item[:11] for item in red_players]
     blue_players = [item[:11] for item in blue_players]
 
-    print(red_players)
-    print(blue_players)
+    # Get various averages
+    current_red_ppr = round(statistics.mean([item[21] for item in red_team]),2)
+    avg_red_ppr = round(statistics.mean([item[22] for item in red_team]), 2)
+    current_blue_ppr = round(statistics.mean([item[21] for item in blue_team]),2)
+    avg_blue_ppr = round(statistics.mean([item[22] for item in blue_team]), 2)
+    avg_red_dmg = round(statistics.mean([item[13] for item in red_team]),0)
+    avg_blue_dmg = round(statistics.mean([item[13] for item in blue_team]),0)
+    avg_red_d = round(statistics.mean([item[16] for item in red_team]))
+    avg_blue_d = round(statistics.mean([item[16] for item in blue_team]))
+    avg_red_k = round(statistics.mean([item[14] for item in red_team]))
+    avg_blue_k = round(statistics.mean([item[14] for item in blue_team]))
 
     red_output = table2ascii(
-        header=["Player", "K", "D", "DMG", "PPR"],
-        body=[[str(red_players[0]), str(red_team[0][14]), str(red_team[0][16]), str(red_team[0][13]),
-               str(round(red_team[0][21], 2))],
-              [str(red_players[1]), str(red_team[1][14]), str(red_team[1][16]), str(red_team[1][13]),
-               str(round(red_team[1][21], 2))],
-              [str(red_players[2]), str(red_team[2][14]), str(red_team[2][16]), str(red_team[2][13]),
-               str(round(red_team[2][21], 2))],
-              [str(red_players[3]), str(red_team[3][14]), str(red_team[3][16]), str(red_team[3][13]),
-               str(round(red_team[3][21], 2))]],
+        header=["Player", "K", "D", "DMG", "PPR", "x̄PPR"],
+        body=[
+            [str(red_players[0]), str(red_team[0][14]), str(red_team[0][16]), str(red_team[0][13]),
+             str(round(red_team[0][21], 2)), str(round(red_team[0][22], 2))],
+            [str(red_players[1]), str(red_team[1][14]), str(red_team[1][16]), str(red_team[1][13]),
+             str(round(red_team[1][21], 2)), str(round(red_team[1][22], 2))],
+            [str(red_players[2]), str(red_team[2][14]), str(red_team[2][16]), str(red_team[2][13]),
+             str(round(red_team[2][21], 2)), str(round(red_team[2][22], 2))],
+            [str(red_players[3]), str(red_team[3][14]), str(red_team[3][16]), str(red_team[3][13]),
+             str(round(red_team[3][21], 2)), str(round(red_team[3][22], 2))],
+        ],
+        footer=["AVG", str(avg_red_k), str(avg_red_d), str(avg_red_dmg), str(current_red_ppr), str(avg_red_ppr)],
         style=PresetStyle.double_compact,
         cell_padding=0,
         alignments=Alignment.LEFT,
     )
 
     blue_output = table2ascii(
-        header=["Player", "K", "D", "DMG", "PPR"],
-        body=[[str(blue_players[0]), str(blue_team[0][14]), str(blue_team[0][16]), str(blue_team[0][13]),
-               str(round(blue_team[0][21], 2))],
-              [str(blue_players[1]), str(blue_team[1][14]), str(blue_team[1][16]), str(blue_team[1][13]),
-               str(round(blue_team[1][21], 2))],
-              [str(blue_players[2]), str(blue_team[2][14]), str(blue_team[2][16]), str(blue_team[2][13]),
-               str(round(blue_team[2][21], 2))],
-              [str(blue_players[3]), str(blue_team[3][14]), str(blue_team[3][16]), str(blue_team[3][13]),
-               str(round(blue_team[3][21], 2))]],
+        header=["Player", "K", "D", "DMG", "PPR", "x̄PPR"],
+        body=[
+            [str(blue_players[0]), str(blue_team[0][14]), str(blue_team[0][16]), str(blue_team[0][13]),
+             str(round(blue_team[0][21], 2)), str(round(blue_team[0][22], 2))],
+            [str(blue_players[1]), str(blue_team[1][14]), str(blue_team[1][16]), str(blue_team[1][13]),
+             str(round(blue_team[1][21], 2)), str(round(blue_team[1][22], 2))],
+            [str(blue_players[2]), str(blue_team[2][14]), str(blue_team[2][16]), str(blue_team[2][13]),
+             str(round(blue_team[2][21], 2)), str(round(blue_team[2][22], 2))],
+            [str(blue_players[3]), str(blue_team[3][14]), str(blue_team[3][16]), str(blue_team[3][13]),
+             str(round(blue_team[3][21], 2)), str(round(blue_team[3][22], 2))],
+        ],
+        footer=["AVG", str(avg_blue_k), str(avg_blue_d), str(avg_blue_dmg), str(current_blue_ppr), str(avg_blue_ppr)],
         style=PresetStyle.double_compact,
         cell_padding=0,
         alignments=Alignment.LEFT,
@@ -129,7 +152,7 @@ async def gen_embed(back):
     embed.set_image(url="https://cdn.discordapp.com/attachments/482012169911664642/1252186601858269184/"
                         "transparent_long.png?"
                         "ex=66714d26&is=666ffba6&hm=45cb3eecc2062d702f276680835c7dd2b39e073146c026e170a18994386c4233&")
-    embed.set_footer(text=str(server_name))
+    embed.set_footer(text=str(server_name) + "\n*x̄PPR based on previous 10 maps")
 
     return embed
 
@@ -161,7 +184,6 @@ class MyView(discord.ui.View):
     # Resets embed to default state (most previous match)
     @discord.ui.button(label="⏮", style=discord.ButtonStyle.primary)
     async def reset(self, interaction, button):
-
         button.label = "⏮"
 
         embed = await gen_embed(0)
@@ -172,7 +194,6 @@ class MyView(discord.ui.View):
 
     @discord.ui.button(label="(1) ⏩", style=discord.ButtonStyle.primary)
     async def back(self, interaction, button):
-
         # Current page based on the number in the button label
         number = button.label
         number = number.replace("(", "")
@@ -186,13 +207,13 @@ class MyView(discord.ui.View):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
+
 ##########################
 # Get player stats
 ##########################
 
 @bot.tree.command(name="power", description="power", guild=discord.Object(id=482012169911664640))
 async def power(interaction: discord.Interaction, player: str):
-
     await interaction.response.defer()
 
     player_stats = q.get_player_stats(player)
@@ -208,20 +229,21 @@ async def power(interaction: discord.Interaction, player: str):
                     "](https://metrics.alde.dev/d/cdom6f94bsk5cf/match-stats?orgId=2&var-MatchID=" +
                     str(player_avg_10[11]) + ")" +
                     "\n**Total matches: **" + str(player_stats[4]) +
-                    "\n**W/L Ratio: **" + str(round(player_avg_10[7],2)) + " (" + str(round(player_stats[3],2)) + ")",
+                    "\n**W/L Ratio: **" + str(round(player_avg_10[7], 2)) + " (" + str(round(player_stats[3], 2)) + ")",
         colour=0xF0C43F,
     )
-    embed.add_field(name="PPR", value=str(round(player_avg_10[8],2)) +
-                                      " (" + str(round(player_stats[2],2)) + ")", inline=True)
-    embed.add_field(name="KPR", value=str(round(avg_kpr_10,2)) +
-                                      " (" + str(round(player_stats[5],2)) + ")", inline=True)
-    embed.add_field(name="KDR", value=str(round(avg_kdr_10,2)) +
-                                      " (" + str(round(player_stats[6],2)) + ")", inline=True)
-    embed.add_field(name="LG_Acc", value= str(round(player_avg_10[13],2)) +
-                                      " (" + str(round(player_stats[7],2)) + ")", inline=True)
+    embed.add_field(name="PPR", value=str(round(player_avg_10[8], 2)) +
+                                      " (" + str(round(player_stats[2], 2)) + ")", inline=True)
+    embed.add_field(name="KPR", value=str(round(avg_kpr_10, 2)) +
+                                      " (" + str(round(player_stats[5], 2)) + ")", inline=True)
+    embed.add_field(name="KDR", value=str(round(avg_kdr_10, 2)) +
+                                      " (" + str(round(player_stats[6], 2)) + ")", inline=True)
+    embed.add_field(name="LG_Acc", value=str(round(player_avg_10[13], 2)) +
+                                         " (" + str(round(player_stats[7], 2)) + ")", inline=True)
 
-    embed.set_footer(text= "*Last 10 maps (all time)")
+    embed.set_footer(text="*Last 10 maps (all time)")
     await interaction.followup.send(embed=embed)
+
 
 @bot.event
 async def on_ready():
