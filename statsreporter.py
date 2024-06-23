@@ -24,11 +24,6 @@ bot = commands.Bot(
     intents=intents
 )
 
-
-def average(lst):
-    return mean(lst)
-
-
 ##########################
 # Generate Embed for Last Commands
 ##########################
@@ -59,11 +54,6 @@ async def gen_embed(back):
     red_score = match_info[0][8]
     blue_score = match_info[0][9]
 
-    # Checks for game to report correctly
-    if red_score + blue_score < 10:
-        print("NO TEAM SCORE")
-        await interaction.followup.send("NO REPORTED SCORE")
-
     #####
     ### Retrieve player info
     #####
@@ -91,9 +81,9 @@ async def gen_embed(back):
 
     # Get various averages
     current_red_ppr = round(statistics.mean([item[21] for item in red_team]),2)
-    avg_red_ppr = round(statistics.mean([item[22] for item in red_team]), 2)
+    avg_red_ppr = round(statistics.mean([item[31] for item in red_team]), 2)
     current_blue_ppr = round(statistics.mean([item[21] for item in blue_team]),2)
-    avg_blue_ppr = round(statistics.mean([item[22] for item in blue_team]), 2)
+    avg_blue_ppr = round(statistics.mean([item[31] for item in blue_team]), 2)
     avg_red_dmg = round(statistics.mean([item[13] for item in red_team]),0)
     avg_blue_dmg = round(statistics.mean([item[13] for item in blue_team]),0)
     avg_red_d = round(statistics.mean([item[16] for item in red_team]))
@@ -105,15 +95,15 @@ async def gen_embed(back):
         header=["Player", "K", "D", "DMG", "PPR", "x̄PPR"],
         body=[
             [str(red_players[0]), str(red_team[0][14]), str(red_team[0][16]), str(red_team[0][13]),
-             str(round(red_team[0][21], 2)), str(round(red_team[0][22], 2))],
+             str(round(red_team[0][21], 2)), str(round(red_team[0][31], 2))],
             [str(red_players[1]), str(red_team[1][14]), str(red_team[1][16]), str(red_team[1][13]),
-             str(round(red_team[1][21], 2)), str(round(red_team[1][22], 2))],
+             str(round(red_team[1][21], 2)), str(round(red_team[1][31], 2))],
             [str(red_players[2]), str(red_team[2][14]), str(red_team[2][16]), str(red_team[2][13]),
-             str(round(red_team[2][21], 2)), str(round(red_team[2][22], 2))],
+             str(round(red_team[2][21], 2)), str(round(red_team[2][31], 2))],
             [str(red_players[3]), str(red_team[3][14]), str(red_team[3][16]), str(red_team[3][13]),
-             str(round(red_team[3][21], 2)), str(round(red_team[3][22], 2))],
+             str(round(red_team[3][21], 2)), str(round(red_team[3][31], 2))],
         ],
-        footer=["AVG", str(avg_red_k), str(avg_red_d), str(avg_red_dmg), str(current_red_ppr), str(avg_red_ppr)],
+        footer=["Avg", str(avg_red_k), str(avg_red_d), str(avg_red_dmg), str(current_red_ppr), str(avg_red_ppr)],
         style=PresetStyle.double_compact,
         cell_padding=0,
         alignments=Alignment.LEFT,
@@ -123,15 +113,15 @@ async def gen_embed(back):
         header=["Player", "K", "D", "DMG", "PPR", "x̄PPR"],
         body=[
             [str(blue_players[0]), str(blue_team[0][14]), str(blue_team[0][16]), str(blue_team[0][13]),
-             str(round(blue_team[0][21], 2)), str(round(blue_team[0][22], 2))],
+             str(round(blue_team[0][21], 2)), str(round(blue_team[0][31], 2))],
             [str(blue_players[1]), str(blue_team[1][14]), str(blue_team[1][16]), str(blue_team[1][13]),
-             str(round(blue_team[1][21], 2)), str(round(blue_team[1][22], 2))],
+             str(round(blue_team[1][21], 2)), str(round(blue_team[1][31], 2))],
             [str(blue_players[2]), str(blue_team[2][14]), str(blue_team[2][16]), str(blue_team[2][13]),
-             str(round(blue_team[2][21], 2)), str(round(blue_team[2][22], 2))],
+             str(round(blue_team[2][21], 2)), str(round(blue_team[2][31], 2))],
             [str(blue_players[3]), str(blue_team[3][14]), str(blue_team[3][16]), str(blue_team[3][13]),
-             str(round(blue_team[3][21], 2)), str(round(blue_team[3][22], 2))],
+             str(round(blue_team[3][21], 2)), str(round(blue_team[3][31], 2))],
         ],
-        footer=["AVG", str(avg_blue_k), str(avg_blue_d), str(avg_blue_dmg), str(current_blue_ppr), str(avg_blue_ppr)],
+        footer=["Avg", str(avg_blue_k), str(avg_blue_d), str(avg_blue_dmg), str(current_blue_ppr), str(avg_blue_ppr)],
         style=PresetStyle.double_compact,
         cell_padding=0,
         alignments=Alignment.LEFT,
@@ -217,6 +207,10 @@ async def power(interaction: discord.Interaction, player: str):
     await interaction.response.defer()
 
     player_stats = q.get_player_stats(player)
+
+    if player_stats is None:
+        await interaction.followup.send("Player not found")
+        return
 
     player_avg_10 = q.get_player_avg_10(player)
 

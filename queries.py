@@ -2,7 +2,7 @@ import SSHConnector as conn
 
 def get_match_num(back):
     query = ("SELECT match_num "
-             "FROM utstatsdb_views.match_ppr_w_bad "
+             "FROM utstatsdb_views.match_ppr_w_avg10 "
              "GROUP BY match_num "
              "ORDER BY match_num "
              "DESC LIMIT " + str(back) + ",1")
@@ -13,7 +13,7 @@ def get_match_num(back):
 
 def get_match_info(natch_num):
     query = ("SELECT * "
-             "FROM utstatsdb_views.match_ppr_w_bad "
+             "FROM utstatsdb_views.match_ppr_w_avg10 "
              "WHERE match_num = " + str(natch_num)
              )
 
@@ -33,8 +33,8 @@ def get_player_stats(player):
 
 def get_player_avg_10(player):
     query = ("SELECT * "
-             "FROM utstatsdb_views.player_averages_10 "
-             "WHERE p_name = '" + str(player) + "'" + " ORDER BY p_num DESC"
+             "FROM utstatsdb_views.player_avg_10 "
+             "WHERE p_name_avg = '" + str(player) + "'" + " ORDER BY p_num_avg DESC"
 
              )
 
