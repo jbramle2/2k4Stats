@@ -19,7 +19,7 @@ intents.message_content = True
 
 bot = commands.Bot(
     command_prefix='!',
-    test_guilds=[482012169911664640],
+    test_guilds=[482012169911664640,793724353962835988],
     sync_commands_debug=True,
     intents=intents
 )
@@ -145,7 +145,7 @@ async def gen_embed(back):
 ##########################
 # Last Slash Command
 ##########################
-@bot.tree.command(name="last", description="last", guild=discord.Object(id=482012169911664640))
+@bot.tree.command(name="last", description="last", guild=discord.Object(id=793724353962835988))
 async def last(interaction: discord.Interaction):
     # Waits for slow query
     await interaction.response.defer()
@@ -197,7 +197,7 @@ class MyView(discord.ui.View):
 # Get player stats
 ##########################
 
-@bot.tree.command(name="power", description="power", guild=discord.Object(id=482012169911664640))
+@bot.tree.command(name="power", description="power", guild=discord.Object(id=793724353962835988))
 async def power(interaction: discord.Interaction, player: str):
     await interaction.response.defer()
 
@@ -246,7 +246,7 @@ async def power(interaction: discord.Interaction, player: str):
 async def on_ready():
     print(f'Bot is online as {bot.user}!')
     try:
-        synced = await bot.tree.sync(guild=discord.Object(id=482012169911664640))
+        synced = await bot.tree.sync(guild=discord.Object(id=793724353962835988))
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
