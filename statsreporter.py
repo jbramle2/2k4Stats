@@ -39,16 +39,11 @@ async def gen_embed(back):
     # ! MAKE GOOD
     date = match_info[0][4]
 
-    print(date)
-    print(type(date))
-
     dt_utc = pytz.utc.localize(date)
 
     est = pytz.timezone('US/Eastern')
 
-    eastern_time = dt_utc.astimezone(est)
-
-    print(eastern_time)
+    eastern_time = dt_utc.astimezone(est).strftime("%b %d, %Y %I:%M%p %Z")
 
     # Retrieves team scores
     red_score = match_info[0][8]
@@ -129,7 +124,7 @@ async def gen_embed(back):
     embed = discord.Embed(title="Latest Match: " + str(match_num),
                           url="https://metrics.alde.dev/d/cdom6f94bsk5cf/match-stats?orgId=2&var-MatchID="
                               + str(match_num),
-                          description="Date: " + str(date) + "\n Map: " + str(map_name))
+                          description="Date: " + str(eastern_time) + "\n Map: " + str(map_name))
 
     embed.add_field(name=":red_square: Red Score: " + str(red_score),
                     value="```" + red_output + "```",
@@ -217,9 +212,17 @@ async def power(interaction: discord.Interaction, player: str):
     avg_kpr_10 = player_avg_10[4] / player_avg_10[12]
     avg_kdr_10 = player_avg_10[4] / player_avg_10[6]
 
+    date = player_avg_10[10]
+
+    dt_utc = pytz.utc.localize(date)
+
+    est = pytz.timezone('US/Eastern')
+
+    eastern_time = dt_utc.astimezone(est).strftime("%b %d, %Y %I:%M%p %Z")
+
     embed = discord.Embed(
         title="Power for " + str(player_stats[0]),
-        description="**Latest:**  [" + str(player_avg_10[10]) +
+        description="**Latest:**  [" + str(eastern_time) +
                     "](https://metrics.alde.dev/d/cdom6f94bsk5cf/match-stats?orgId=2&var-MatchID=" +
                     str(player_avg_10[11]) + ")" +
                     "\n**Total matches: **" + str(player_stats[4]) +
